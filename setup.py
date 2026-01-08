@@ -1,11 +1,12 @@
 import setuptools
 
-# Simple setup.py for Frappe app
-# Frappe bench handles version detection differently
+# Setup for Frappe app with nested package structure
+# Root: __init__.py (for Frappe version detection)
+# Package: frappe_puppeteer_pdf/__init__.py (for Python packaging)
 
 setuptools.setup(
     name="frappe_puppeteer_pdf",
-    version="1.0.0",
+    version="1.0.0",  # Frappe will read actual version from root __init__.py
     description="Frappe App to generate PDFs using Puppeteer/Chrome",
     author="Frappe Technologies Pvt Ltd.",
     author_email="hello@frappe.io",
