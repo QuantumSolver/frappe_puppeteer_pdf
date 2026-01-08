@@ -286,12 +286,12 @@ def pdf_header_footer_html(soup, head, content, styles, html_id, css):
         )
 
 
-def pdf_body_html(print_format, for_preview=False, debug=False):
+def pdf_body_html(print_format, for_preview=False, debug=False, **kwargs):
     """Generate HTML for PDF body"""
     # Use Frappe's default implementation
     from frappe.utils.pdf import pdf_body_html as frappe_pdf_body_html
 
-    return frappe_pdf_body_html(print_format, for_preview, debug)
+    return frappe_pdf_body_html(print_format, for_preview, debug, **kwargs)
 
 
 def get_print_format_template():
