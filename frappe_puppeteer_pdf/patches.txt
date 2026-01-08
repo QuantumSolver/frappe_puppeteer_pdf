@@ -1,2 +1,5 @@
+[pre_model_sync]
+# No patches before model sync
+
 [post_model_sync]
 frappe_puppeteer_pdf.patches.create_custom_fields
