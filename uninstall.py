@@ -1,7 +1,7 @@
 import frappe
 
-from .custom_fields import CUSTOM_FIELDS
-from .install import set_pdf_generator_option
+from frappe_puppeteer_pdf.custom_fields import CUSTOM_FIELDS
+from frappe_puppeteer_pdf.install import set_pdf_generator_option
 
 
 def delete_custom_fields(custom_fields):
