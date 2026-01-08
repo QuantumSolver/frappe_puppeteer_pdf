@@ -23,11 +23,11 @@ app_license = "AGPLv3"
 # include js in page
 # Keep minimal client scripts if needed for PDF
 page_js = {
-    "print": "public/js/print.js",
+    "print": "frappe_puppeteer_pdf/public/js/print.js",
 }
 
 # include js in doctype views
-doctype_js = {"Print Format": "public/js/print_format.js"}
+doctype_js = {"Print Format": "frappe_puppeteer_pdf/public/js/print_format.js"}
 
 # Jinja
 # ----------
