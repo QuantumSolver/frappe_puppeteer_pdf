@@ -1,31 +1,22 @@
-import os
+import setuptools
 
-from setuptools import find_packages, setup
+# Simple setup.py for Frappe app
+# Frappe bench handles version detection differently
 
-
-# Get version from __init__.py
-def get_version():
-    with open(os.path.join("frappe_puppeteer_pdf", "__init__.py"), "r") as f:
-        for line in f:
-            if line.startswith("__version__"):
-                return eval(line.split("=")[1].strip())
-    return "1.0.0"
-
-
-# Read requirements from requirements.txt
-def get_requirements():
-    with open("requirements.txt", "r") as f:
-        return f.read().strip().split("\n")
-
-
-setup(
+setuptools.setup(
     name="frappe_puppeteer_pdf",
-    version=get_version(),
+    version="1.0.0",
     description="Frappe App to generate PDFs using Puppeteer/Chrome",
     author="Frappe Technologies Pvt Ltd.",
     author_email="hello@frappe.io",
-    packages=find_packages(),
+    packages=setuptools.find_packages(),
     zip_safe=False,
     include_package_data=True,
-    install_requires=get_requirements(),
+    install_requires=[
+        "playwright==1.40.0",
+        "PyQRCode~=1.2.1",
+        "pypng~=0.20220715.0",
+        "python-barcode~=0.15.1",
+        "distro",
+    ],
 )
