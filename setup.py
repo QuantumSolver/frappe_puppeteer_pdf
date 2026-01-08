@@ -10,9 +10,6 @@ def get_version():
         os.path.dirname(__file__), "frappe_puppeteer_pdf", "__init__.py"
     )
 
-    if not os.path.exists(init_path):
-        init_path = os.path.join(os.path.dirname(__file__), "__init__.py")
-
     with open(init_path, "r") as f:
         content = f.read()
 

@@ -5,7 +5,7 @@ import frappe
 from frappe.utils.pdf import get_pdf as frappe_get_pdf
 from playwright.sync_api import sync_playwright
 
-from frappe_puppeteer_pdf.chrome_manager import ensure_chrome_running, stop_chrome
+from .chrome_manager import ensure_chrome_running, stop_chrome
 
 
 def before_request():
@@ -160,7 +160,7 @@ def fallback_to_wkhtmltopdf(html, options, output):
 
 def check_chrome_status():
     """Check if Chrome is running and return status"""
-    from frappe_puppeteer_pdf.chrome_manager import get_chrome_manager
+    from .chrome_manager import get_chrome_manager
 
     try:
         manager = get_chrome_manager()

@@ -69,7 +69,7 @@ class ChromeManager:
 
     def get_chrome_path(self):
         """Get Chrome executable path from install.py"""
-        from frappe_puppeteer_pdf.install import find_or_download_chromium_executable
+        from .install import find_or_download_chromium_executable
 
         return find_or_download_chromium_executable()
 
