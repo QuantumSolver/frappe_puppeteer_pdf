@@ -31,7 +31,7 @@ def delete_custom_fields(custom_fields):
 
 
 def remove_pdf_generator_option():
-    set_pdf_generator_option("remove", generator_name="puppeteer")
+    set_pdf_generator_option("remove", generator_name="chrome")
 
 
 def before_uninstall():

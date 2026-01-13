@@ -333,11 +333,11 @@ def calculate_platform():
 
 
 def add_pdf_generator_option():
-    set_pdf_generator_option("add", generator_name="puppeteer")
+    set_pdf_generator_option("add", generator_name="chrome")
 
 
 def set_pdf_generator_option(
-    action: Literal["add", "remove"], generator_name="puppeteer"
+    action: Literal["add", "remove"], generator_name="chrome"
 ):
     field = frappe.get_meta("Print Format").get_field("pdf_generator")
 

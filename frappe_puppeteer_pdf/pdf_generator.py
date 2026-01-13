@@ -1,15 +1,12 @@
-import os
-import tempfile
-
 import frappe
 from frappe.utils.pdf import get_pdf as frappe_get_pdf
 from playwright.sync_api import sync_playwright
 
-from .chrome_manager import ensure_chrome_running, stop_chrome
+from .chrome_manager import ensure_chrome_running
 
 
 def before_request():
-    """Set pdf_generator to puppeteer for print designer formats"""
+    """Set pdf_generator to chrome for print designer formats"""
     if (
         frappe.request.path == "/api/method/frappe.utils.print_format.download_pdf"
         or frappe.request.path == "/printview"
@@ -17,28 +14,24 @@ def before_request():
         # Get the print format being requested
         print_format = frappe.request.args.get("format")
         if print_format:
-            # Check if this is a print designer format
-            is_print_designer = frappe.get_cached_value(
-                "Print Format", print_format, "print_designer"
-            )
             pdf_generator = frappe.get_cached_value(
                 "Print Format", print_format, "pdf_generator"
             )
 
             # Set pdf_generator in form_dict
-            if is_print_designer and pdf_generator == "puppeteer":
-                frappe.local.form_dict.pdf_generator = "puppeteer"
+            if pdf_generator == "chrome":
+                frappe.local.form_dict.pdf_generator = "chrome"
             else:
                 frappe.local.form_dict.pdf_generator = frappe.request.args.get(
                     "pdf_generator", pdf_generator or "wkhtmltopdf"
                 )
 
-        # Initialize Chrome if puppeteer is being used
-        if frappe.local.form_dict.get("pdf_generator") == "puppeteer":
+        # Initialize Chrome if chrome is being used
+        if frappe.local.form_dict.get("pdf_generator") == "chrome":
             try:
                 ensure_chrome_running()
             except Exception as e:
-                frappe.log_error(f"Failed to start Chrome for puppeteer: {e}")
+                frappe.log_error(f"Failed to start Chrome: {e}")
                 # Fallback to wkhtmltopdf
                 frappe.local.form_dict.pdf_generator = "wkhtmltopdf"
 
@@ -51,14 +44,22 @@ def after_request():
 
 def get_pdf(print_format, html, options=None, output=None, pdf_generator=None):
     """Main PDF generation function called by Frappe"""
-    if pdf_generator != "puppeteer":
+    if pdf_generator != "chrome":
         # Let Frappe use default PDF generator
         return None
 
     try:
         frappe.logger().info(
-            f"Generating PDF with puppeteer for format: {print_format}"
+            f"Generating PDF with chrome/playwright for format: {print_format}"
         )
+
+        # Get orientation from Print Format
+        if not options:
+            options = {}
+        if print_format:
+            orientation = frappe.get_cached_value("Print Format", print_format, "pdf_page_orientation")
+            if orientation:
+                options["orientation"] = orientation
 
         # Ensure Chrome is running
         chrome_manager = ensure_chrome_running()
@@ -74,7 +75,7 @@ def get_pdf(print_format, html, options=None, output=None, pdf_generator=None):
         return pdf_data
 
     except Exception as e:
-        frappe.log_error(f"Puppeteer PDF generation failed for {print_format}: {e}")
+        frappe.log_error(f"Chrome PDF generation failed for {print_format}: {e}")
         frappe.logger().error(f"Falling back to wkhtmltopdf: {e}")
 
         # Fallback to Frappe's default PDF generator
@@ -83,6 +84,10 @@ def get_pdf(print_format, html, options=None, output=None, pdf_generator=None):
 
 def generate_with_playwright(html, options, chrome_manager):
     """Generate PDF using Playwright connected to Chrome"""
+    # Strip print-hide elements (Print/Get PDF buttons)
+    import re
+    html = re.sub(r'<div class="action-banner print-hide">.*?</div>', '', html, flags=re.DOTALL)
+
     with sync_playwright() as p:
         try:
             # Connect to running Chrome instance
@@ -93,6 +98,9 @@ def generate_with_playwright(html, options, chrome_manager):
 
             # Set HTML content
             page.set_content(html, wait_until="networkidle")
+
+            # Emulate print media to apply @media print styles
+            page.emulate_media(media="print")
 
             # Configure PDF options
             pdf_options = map_frappe_to_playwright(options)
